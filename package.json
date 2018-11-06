@@ -1,0 +1,14 @@
+{
+  "name": "master-of-emoji",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:anabellaspinelli/master-of-emoji.git",
+  "author": "Anabella Spinelli <anabellaspinelli@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^0.18.0"
+  },
+  "scripts": {
+    "start": "node index.js"
+  }
+}

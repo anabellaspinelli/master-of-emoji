@@ -24,9 +24,18 @@ axios({
 
     const winnerKey = Object.entries(users).reduce((a, b) => a[1] > b[1] ? a : b)[0]
 
+    const emojisOfWinner = data.reduce((acc, emoji) => {
+      if (emoji.user_display_name === winnerKey) acc.push(`:${emoji.name}:`)
+
+      return acc
+    }, [])
+
+    emojisOfWinner.forEach(em => console.log(em))
+
     console.log(`
-      Winner(s): ${winnerKey}
+      Winner: ${winnerKey}
       Emojis created: ${users[winnerKey]}
+      And here they are: ${emojisOfWinner.join(' ')}
     `)
   })
   .catch(e => console.log(e))

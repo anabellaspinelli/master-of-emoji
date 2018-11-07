@@ -1,6 +1,10 @@
 const axios = require('axios')
 
-const workspace = process.argv[2] || 'typeform'
+const workspace = process.argv[2]
+const token = process.argv[3]
+
+if (!workspace) throw 'Please add your company\'s Slack workspace name as the first argument'
+if (!token) throw 'Please add your hacky Slack token as the second argument'
 
 axios({
   method: 'post',
@@ -8,37 +12,21 @@ axios({
   data: `token=${process.argv[3]}`
 }).then(res => res.data.emoji)
   .then(data => {
-    const scoreBoard = data.reduce((acc, curr) => {
-      const currentUserName = curr['user_display_name']
-      const currentUserScore = acc.find(el => el.name === currentUserName)
-
-      if (!currentUserScore) {
-        return [
-          ...acc,
-          {
-            name: currentUserName,
-            score: 1
-          }
-        ]
+    const users = data.reduce((users, emoji) => {
+      if (emoji.user_display_name in users) {
+        users[emoji.user_display_name]++
       }
+      else {
+        users[emoji.user_display_name] = 1
+      }
+      return users
+    }, {})
 
-      currentUserScore.score++
-      return acc
-    }, [])
-
-    const highScore = scoreBoard
-      .reduce((acc, el) => [...acc, el.score], [])
-      .sort((a,b) => b - a)[0]
-      
-    const masterOfEmoji = scoreBoard
-      .filter(el => el.score === highScore)
-      .reduce((acc, el) => [...acc, el.name], [])
-      .join(', ')
+    const winnerKey = Object.entries(users).reduce((a, b) => a[1] > b[1] ? a : b)[0]
 
     console.log(`
-      Winner(s): ${masterOfEmoji}
-      Emojis created: ${highScore}
+      Winner(s): ${winnerKey}
+      Emojis created: ${users[winnerKey]}
     `)
-
   })
   .catch(e => console.log(e))

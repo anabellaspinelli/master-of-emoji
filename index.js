@@ -12,17 +12,27 @@ axios({
   data: `token=${process.argv[3]}`
 }).then(res => res.data.emoji)
   .then(data => {
-    const users = data.reduce((users, emoji) => {
-      if (emoji.user_display_name in users) {
-        users[emoji.user_display_name]++
+    data = data || []
+
+    const leaderboard = data.reduce((leaderboard, emoji) => {
+      if (emoji.is_alias) return leaderboard
+
+      if (emoji.user_display_name in leaderboard) {
+        leaderboard[emoji.user_display_name]++
       }
       else {
-        users[emoji.user_display_name] = 1
+        leaderboard[emoji.user_display_name] = 1
       }
-      return users
+      return leaderboard
     }, {})
 
-    const winnerKey = Object.entries(users).reduce((a, b) => a[1] > b[1] ? a : b)[0]
+    if (Object.keys(leaderboard).length === 0) {
+      throw new Error(
+        'No custom emoji found. Did you use the correct arguments? (see README for details)'
+      )
+    }
+
+    const winnerKey = Object.entries(leaderboard).reduce((a, b) => a[1] > b[1] ? a : b)[0]
 
     const emojisOfWinner = data.reduce((acc, emoji) => {
       if (emoji.user_display_name === winnerKey) acc.push(`:${emoji.name}:`)
@@ -32,7 +42,7 @@ axios({
 
     console.log(`
       Winner: ${winnerKey}
-      Emojis created: ${users[winnerKey]}
+      Emojis created: ${leaderboard[winnerKey]}
       And here they are: ${emojisOfWinner.join(' ')}
     `)
   })

@@ -4,7 +4,7 @@ const workspace = process.argv[2]
 const token = process.argv[3]
 
 if (!workspace) throw 'Please add your company\'s Slack workspace name as the first argument'
-if (!token) throw 'Please add your hacky Slack token as the second argument'
+if (!token) throw 'Please add your hacky Slack token as the second argument (see README)'
 
 axios({
   method: 'post',

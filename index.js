@@ -30,8 +30,6 @@ axios({
       return acc
     }, [])
 
-    emojisOfWinner.forEach(em => console.log(em))
-
     console.log(`
       Winner: ${winnerKey}
       Emojis created: ${users[winnerKey]}

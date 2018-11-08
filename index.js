@@ -10,9 +10,13 @@ axios({
   method: 'post',
   url: `https://${workspace}.slack.com/api/emoji.adminList`,
   data: `token=${process.argv[3]}`
-}).then(res => res.data.emoji)
-  .then(data => {
-    data = data || []
+}).then(res => {
+    const data = res.data.emoji || []
+    const total = res.data.custom_emoji_total_count || 0
+
+    if (res.data.paging.pages > 1) {
+      console.log(`Evaluating only the latest ${total} emoji added.`)
+    }
 
     const leaderboard = data.reduce((leaderboard, emoji) => {
       if (emoji.is_alias) return leaderboard
@@ -41,8 +45,12 @@ axios({
     }, [])
 
     console.log(`
-      Winner: ${winnerKey}
-      Emojis created: ${leaderboard[winnerKey]}
+      Total custom emoji in this workspace: ${total}
+
+      The MASTER OF EMOJI is... ${winnerKey} !!!
+
+      with a total of ${leaderboard[winnerKey]} emoji
+
       And here they are: ${emojisOfWinner.join(' ')}
     `)
   })
